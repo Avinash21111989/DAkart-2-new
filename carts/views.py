@@ -4,6 +4,7 @@ from carts.models import Cart, CartItem
 from store.models import Product
 
 # Create your views here.
+#my views
 def cart_id(request):
     cartId = request.session.session_key
     if not cartId:
