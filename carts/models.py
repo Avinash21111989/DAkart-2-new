@@ -19,4 +19,4 @@ class CartItem(models.Model):
         return self.product.product_name
     
     def get_subtotal(self):
-        return self.product.price * self.quantity
+        return self.product.price * self.quantity #To get sub total we write function here
