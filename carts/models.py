@@ -21,4 +21,6 @@ class CartItem(models.Model):
     def get_subtotal(self):
         return self.product.price * self.quantity
     #new comment
+    #new comment to test
+    #new comment to test again
     
