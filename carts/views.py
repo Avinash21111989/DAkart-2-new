@@ -1,5 +1,5 @@
 from django.http import HttpResponse
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 from carts.models import Cart, CartItem
 from store.models import Product
 
@@ -38,19 +38,36 @@ def add_cart(request,product_id):
 
     return redirect('cart')
 
-def carts(request, total=0,quantity=0):
+def carts(request, total=0,tax=0):
     
     cart = Cart.objects.get(cart_id=cart_id(request))
     cart_items = CartItem.objects.filter(cart=cart,is_active=True)
     for cart_item in cart_items:
         total += cart_item.product.price * cart_item.quantity
         
-    
+    tax = (2 * total)/100
+    grand_total = total +  tax
     context = {
         'total':total,
-        'cart_items':cart_items
+        'cart_items':cart_items,
+        'tax':tax,
+        'grand_total':grand_total
     }
 
     return render(request,'carts.html',context)
+
+def remove_cartItem(request,product_id):
+    product = get_object_or_404(Product, id=product_id)
+    cart = Cart.objects.get(cart_id = cart_id(request))
+    cart_item = CartItem.objects.get(product=product,cart = cart)
+
+    if cart_item.quantity >1:
+        cart_item.quantity -= 1
+        cart_item.save()
+    else:
+        cart_item.delete()
+
+    return redirect('cart')
+
 
 

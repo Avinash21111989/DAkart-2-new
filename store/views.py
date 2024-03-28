@@ -2,6 +2,7 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render
 from store.models import Product
 from category.models import Category
+from django.db import connection
 
 # Create your views here.
 
@@ -23,7 +24,14 @@ def store(request,category_url=None):
     return render(request,'store.html',context)
 
 def product_detail(request,category_url,product_url):
-    single_product = Product.objects.get(category__slug=category_url,slug=product_url)
+    
+    try:
+        single_product = Product.objects.get(category__slug=category_url,slug=product_url)
+        #print(Product.objects.get(category__slug=category_url,slug=product_url).query)
+    except:
+        pass
+        
+        
     context = {
         'single_product':single_product
     }
