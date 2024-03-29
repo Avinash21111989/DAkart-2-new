@@ -5,7 +5,6 @@ from store.models import Product
 
 def welcomescreen(request):
     products = Product.objects.all().filter(is_available=True)
-    print(products)
     
     context = {
         "products": products
