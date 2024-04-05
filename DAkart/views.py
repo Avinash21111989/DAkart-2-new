@@ -3,6 +3,8 @@ from pathlib import Path
 from django.shortcuts import render
 from django.http import HttpResponse
 from store.models import Product
+
+
 # Create your views here.
 
 

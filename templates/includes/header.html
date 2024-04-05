@@ -35,11 +35,14 @@
         <div class="col-lg col-sm col-md col-6 flex-grow-0">
             <div class="category-wrap dropdown d-inline-block float-right">
                 <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown"> 
-                    <i class="fa fa-bars"></i> All categories
+                    <i class="fa fa-bars"></i> 
+                    <span id="cat">
+                       All categories
+                    </span>
                 </button>
                 <div class="dropdown-menu">
                     {% for link in links %}
-                    <a class="dropdown-item" href="{% url 'products_by_category'  link.slug %}">{{ link.category_name }} </a>
+                    <a class="dropdown-item" onClick = "getCategory('{{ link.category_name }}')" href="{% url 'products_by_category'  link.slug %}">{{ link.category_name }} </a>
                     {% endfor %}
                 </div>
             </div>  <!-- category-wrap.// -->
@@ -63,8 +66,8 @@
                         <div class="widget-header">
                             <small class="title text-muted">Welcome guest!</small>
                             <div> 
-                                <a href="./signin.html">Sign in</a> <span class="dark-transp"> | </span>
-                                <a href="./register.html"> Register</a>
+                                <a href="{% url 'signin' %}">Sign in</a> <span class="dark-transp"> | </span>
+                                <a href="{% url 'register' %}"> Register</a>
                             </div>
                         </div>
                         <a href="./cart.html" class="widget-header pl-3 ml-3">
@@ -77,8 +80,15 @@
         </div> <!-- container.// -->
     </section> <!-- header-main .// -->
     
-    
-    
+    {% block javascript %}
+    <script>
+      getCategory = function(cname) {
+        alert(cname)
+        $("#cal").text(cname)
+      }  
+    </script>
+
+    {% endblock %}
     
     </header> <!-- section-header.// -->
     

@@ -69,5 +69,18 @@ def remove_cartItem(request,product_id):
 
     return redirect('cart')
 
+def checkout(request,total=0):
+    cart = Cart.objects.get(cart_id=cart_id(request))
+    cart_items = CartItem.objects.filter(cart=cart,is_active=True)
+    for cart_item in cart_items:
+        total += cart_item.product.price * cart_item.quantity
+
+    context = {
+       'total':total,
+       'cart_items':cart_items, 
+    }
+
+    return render(request,'checkout.html', context)
+
 
 
