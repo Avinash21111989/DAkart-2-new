@@ -1,5 +1,7 @@
 from django.shortcuts import render, redirect
 from django.template.loader import render_to_string
+
+from accounts.models import UserProfile
 from . forms import RegistrationForm
 from django.contrib.auth.models import User
 from django.conf import settings
@@ -8,6 +10,7 @@ from django.utils.http import urlsafe_base64_encode,urlsafe_base64_decode
 from django.utils.encoding import force_bytes
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
+from django.contrib import auth, messages
 
 def register(request):
     
@@ -30,6 +33,12 @@ def register(request):
             )
             user.save()
 
+            #create a user profile
+            profile = UserProfile()
+            profile.user_id = user.id
+            profile.profile_picture = 'default/default-user.png'
+            profile.save()
+            
             current_site = get_current_site(request)
             mail_subject = "DAKart - please activate your account"
             email_from = settings.EMAIL_HOST_USER
@@ -54,7 +63,21 @@ def register(request):
     return render(request,'accounts/register.html', context)
 
 def signin(request):
-    return render(request,'accounts/signin.html')
+    
+    if request.method == 'POST':
+        
+        entered_username = request.POST['username']
+        entered_password = request.POST['password']
+        print("email"+ entered_username)
+        print("password"+ entered_password)
+        user = auth.authenticate(username = entered_username, password = entered_password)
+        if user is not None:
+            print("Authenticate", user)
+            auth.login(request,user)
+            return redirect("welcome")
+        else:
+           messages.warning(request,"Invalid credetials")
+    return render(request,'accounts/signin.html') 
 
 def activate(request,uidb64,token):
     try:
@@ -69,3 +92,9 @@ def activate(request,uidb64,token):
         return redirect('signin')
     else:
         return redirect('register')
+    
+
+def logout(request):
+    auth.logout(request)
+    messages.success(request,"you have been logged out")
+    return redirect('signin')
