@@ -1,5 +1,6 @@
 from django import forms
 from django.contrib.auth.models import User
+from . models import UserProfile
 
 class RegistrationForm(forms.ModelForm):
 
@@ -33,3 +34,20 @@ class RegistrationForm(forms.ModelForm):
         self.fields['email'].widget.attrs['placeholder'] = 'Enter email'
         for field in self.fields:
             self.fields[field].widget.attrs['class'] = 'form-control'
+
+class UserProfileForm(forms.ModelForm):
+    profile_picture = forms.ImageField(required=False,error_messages={'invalid':(" Images files only")},widget=forms.FileInput
+        )
+    
+    class Meta:
+        model = UserProfile
+        fields = ['addrress_line_1','addrress_line_2','profile_picture','city','state','country']
+
+    def __init__(self,*args, **kwargs):
+        super(RegistrationForm,self).__init__(*args, **kwargs)
+
+        for field in self.fields:
+            self.fields[field].widget.attrs['class'] = 'form-control'
+
+
+
