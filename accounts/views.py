@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.template.loader import render_to_string
 
 from accounts.models import UserProfile
-from . forms import RegistrationForm
+from . forms import RegistrationForm,UserProfileForm
 from django.contrib.auth.models import User
 from django.conf import settings
 from django.contrib.sites.shortcuts import get_current_site
@@ -71,12 +71,16 @@ def signin(request):
         print("email"+ entered_username)
         print("password"+ entered_password)
         user = auth.authenticate(username = entered_username, password = entered_password)
+        
         if user is not None:
-            print("Authenticate", user)
-            auth.login(request,user)
-            return redirect("welcome")
+                auth.login(request,user)
+                return redirect("welcome")
         else:
-           messages.warning(request,"Invalid credetials")
+            user_isactive = User.objects.filter(username=entered_username,is_active=True)
+            if user_isactive.exists() == False:
+                messages.warning(request,"Your account is not activated. Please activate your account")
+            else:
+                messages.warning(request,"Invalid credetials")
     return render(request,'accounts/signin.html') 
 
 def activate(request,uidb64,token):
@@ -98,3 +102,23 @@ def logout(request):
     auth.logout(request)
     messages.success(request,"you have been logged out")
     return redirect('signin')
+
+def dashboard(request):
+    userprofile = UserProfile.objects.get(user_id = request.user.id)
+    context = {
+        'userprofile':userprofile
+    }
+    return render(request,'accounts/dashboard.html',context)
+def edit_profile(request):
+    user_profile = None
+    try:
+        user_profile = UserProfile.objects.get(user_id = request.user.id)
+    except:
+        pass
+    user_form = RegistrationForm(instance = request.user)
+    user_profile_form = UserProfileForm(instance = user_profile)
+    context = {
+        'user_form':user_form,
+        'user_profile_form':user_profile_form
+    }
+    return render(request,'accounts/edit_profile.html',context)

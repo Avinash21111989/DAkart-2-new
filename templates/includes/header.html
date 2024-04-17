@@ -65,12 +65,12 @@
                     <div class="d-flex justify-content-end mb-3 mb-lg-0">
                         {% if user.id is not None %}
                         <div class="widget-header">
-                            {{ user.userProfile }}
-                            <img src="{{ user.UserProfile.profile_picture.url }}" width="50" height="50">
+                            
+                            <img src="{{ user.userprofile.profile_picture.url }}" width="50" height="50">
                             <small class="title text-muted">Welcome {{ user.first_name }}</small>
                             <div> 
                                 <a href="{% url 'logout' %}">Logout</a> <span class="dark-transp"> | </span>
-                                <a href="#"> Dashboard</a>
+                                <a href="{% url 'dashboard' %}"> Dashboard</a>
                             </div>
                         </div>
                         {% else %}
