@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.template.loader import render_to_string
 
 from accounts.models import UserProfile
-from . forms import RegistrationForm,UserProfileForm
+from . forms import RegistrationForm,UserProfileForm, UserForm
 from django.contrib.auth.models import User
 from django.conf import settings
 from django.contrib.sites.shortcuts import get_current_site
@@ -11,6 +11,7 @@ from django.utils.encoding import force_bytes
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
 from django.contrib import auth, messages
+from django.contrib.auth.decorators import login_required
 
 def register(request):
     
@@ -103,22 +104,71 @@ def logout(request):
     messages.success(request,"you have been logged out")
     return redirect('signin')
 
-def dashboard(request):
-    userprofile = UserProfile.objects.get(user_id = request.user.id)
+@login_required(login_url='signin')
+def dashboard(request,userprofile=None):
+    try:
+        userprofile = UserProfile.objects.get(user_id = request.user.id)
+    except:
+        pass
     context = {
         'userprofile':userprofile
     }
     return render(request,'accounts/dashboard.html',context)
+
+@login_required(login_url='signin')
 def edit_profile(request):
     user_profile = None
     try:
         user_profile = UserProfile.objects.get(user_id = request.user.id)
     except:
         pass
-    user_form = RegistrationForm(instance = request.user)
-    user_profile_form = UserProfileForm(instance = user_profile)
+
+    
+    if request.method == 'POST':
+        
+        user_form = UserForm(request.POST,instance=request.user)
+        user_profile_form = UserProfileForm(request.POST,request.FILES,instance=user_profile)
+
+        if  user_form.is_valid() and user_profile_form.is_valid():
+            user_form.save()
+            user_profile_form.save()
+            messages.success(request,"Your profile has been updated!")
+            return redirect('edit_profile')
+        else:
+            print(user_form.errors)
+    else:
+        user_form = UserForm(instance=request.user)
+        user_profile_form = UserProfileForm(instance = user_profile)
     context = {
         'user_form':user_form,
-        'user_profile_form':user_profile_form
+        'user_profile_form':user_profile_form,
+        'user_profile':user_profile
     }
     return render(request,'accounts/edit_profile.html',context)
+
+@login_required(login_url ='signin')
+def change_password(request):
+    if request.method == 'POST':
+        current_password = request.POST['current_password']
+        new_password = request.POST['new_password']
+        confirm_new_password = request.POST['confirm_new_password']
+        print(current_password)
+        print(new_password)
+        print(confirm_new_password)
+        user = User.objects.get(username__iexact=request.user.username)
+        if new_password == confirm_new_password:
+            print("first validation")
+            check_password = user.check_password(current_password)
+            print("check_password",check_password)
+            if check_password:
+                user.set_password(new_password)
+                user.save()
+                auth.logout(request)
+            else:
+                messages.warning(request,"please enter a valid current password")
+   
+        else:
+            messages.warning(request,"new password and confirm password not matching")
+
+
+    return render(request,'accounts/change_password.html')

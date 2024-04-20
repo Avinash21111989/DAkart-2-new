@@ -12,11 +12,11 @@
                 <article class="card">
                    
                     <div class="card-body">
-                        <img src="{{ userprofile.profile_picture.url }}" width="100" height="100" style="border-radius:50%">
+                        <img src="{{ user_profile.profile_picture.url }}" width="100" height="100" style="border-radius:50%">
                     </div>
                     <div class="row">
                         <div class="col-md-12">
-                            <form>
+                            <form action="{% url 'edit_profile' %}" method="POST" enctype="multipart/form-data">
                                 {% csrf_token %}
                                 <div class="form-row">
                                     <div class="form-group col-md-6">
@@ -31,12 +31,17 @@
                                     </div>
                                 </div>
                                 <div class="form-row">
-                                    <div class="form-group col-md-6">
+                                    <div class="form-group col-md-4">
+                                        <label> Profile Picture</label> 
+                                        {{ user_profile_form.profile_picture }}
+                                        
+                                    </div>
+                                    <div class="form-group col-md-4">
                                         <label> Address line1</label> 
                                         {{ user_profile_form.addrress_line_1 }}
                                         
                                     </div>
-                                    <div class="form-group col-md-6">
+                                    <div class="form-group col-md-4">
                                         <label> Address line2</label> 
                                         {{ user_profile_form.addrress_line_2 }}
                                         
