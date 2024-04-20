@@ -35,6 +35,17 @@ class RegistrationForm(forms.ModelForm):
         for field in self.fields:
             self.fields[field].widget.attrs['class'] = 'form-control'
 
+
+class UserForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['first_name','last_name']
+    def __init__(self,*args, **kwargs):
+        super(UserForm,self).__init__(*args, **kwargs)
+
+        for field in self.fields:
+            self.fields[field].widget.attrs['class'] = 'form-control'
+
 class UserProfileForm(forms.ModelForm):
     profile_picture = forms.ImageField(required=False,error_messages={'invalid':(" Images files only")},widget=forms.FileInput
         )
@@ -44,7 +55,7 @@ class UserProfileForm(forms.ModelForm):
         fields = ['addrress_line_1','addrress_line_2','profile_picture','city','state','country']
 
     def __init__(self,*args, **kwargs):
-        super(RegistrationForm,self).__init__(*args, **kwargs)
+        super(UserProfileForm,self).__init__(*args, **kwargs)
 
         for field in self.fields:
             self.fields[field].widget.attrs['class'] = 'form-control'
