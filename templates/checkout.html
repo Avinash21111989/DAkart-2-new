@@ -4,8 +4,10 @@
 {% block content %}
 
 
+<section class="section-content padding-y bg">
+<div class="container">
 <div class="row">
-<aside class="col-lg-8">
+<aside class="col-lg-6">
     <div class="card">
       <div class="card-body">
         <h4 class="card-title mb-4">Billing Address</h4>
@@ -66,7 +68,7 @@
     
         </aside> <!-- col.// -->
 
-<aside class="col-lg-4">
+<aside class="col-lg-6">
 {% if cart_items %}
 <div class="card">
 
@@ -87,7 +89,7 @@
         <div class="aside"><img src="{{ cart_item.product.images.url }}" class="img-sm"></div>
         <figcaption class="info">
             <a href="#" class="title text-dark">{{ cart_item.product.description }}</a>
-            <p class="text-muted small">Matrix: 25 Mpx <br> Brand: Canon</p>
+            
         </figcaption>
     </figure>
 </td>
@@ -120,7 +122,10 @@
 <button type="submit" name="submit" class="btn btn-primary btn-block">Place Order</button>
 			<a href="{% url 'store' %}" class="btn btn-light btn-block">Continue Shopping</a>
 </div> <!-- card.// -->
+</form>
 {% endif %}
 </aside> <!-- col.// -->
 </div>
+</div> <!-- container .//  -->
+</section>
 {% endblock %}
