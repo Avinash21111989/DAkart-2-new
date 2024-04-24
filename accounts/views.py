@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.template.loader import render_to_string
 
 from accounts.models import UserProfile
+from carts.models import Cart, CartItem
 from . forms import RegistrationForm,UserProfileForm, UserForm
 from django.contrib.auth.models import User
 from django.conf import settings
@@ -12,6 +13,7 @@ from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
 from django.contrib import auth, messages
 from django.contrib.auth.decorators import login_required
+from carts.views import cart_id
 
 def register(request):
     
@@ -23,7 +25,7 @@ def register(request):
             last_name = form.cleaned_data['last_name']
             email = form.cleaned_data['email']
             username = email.split("@")[0]
-            password = form.cleaned_data['password']
+            password = form.cleaned_data['password']       
             user = User.objects.create_user (
                 username = username,
                 first_name =  first_name,
@@ -66,14 +68,27 @@ def register(request):
 def signin(request):
     
     if request.method == 'POST':
-        
+        is_cart_item_exists = None    
         entered_username = request.POST['username']
         entered_password = request.POST['password']
-        print("email"+ entered_username)
-        print("password"+ entered_password)
+        
         user = auth.authenticate(username = entered_username, password = entered_password)
         
         if user is not None:
+                try:
+                    cart = Cart.objects.get(cart_id=cart_id(request))
+                    is_cart_item_exists = CartItem.objects.filter(cart=cart).exists()
+                except:
+                    pass
+                if is_cart_item_exists:
+                    print("cart exists")
+                    cart_item = CartItem.objects.filter(cart=cart,is_active=True)
+                    print(cart_item)
+                    for item in cart_item:
+                                item.user = user
+                                item.save()
+                else:
+                    print("cart does not exist")
                 auth.login(request,user)
                 return redirect("welcome")
         else:
