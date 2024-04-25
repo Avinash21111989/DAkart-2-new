@@ -97,13 +97,9 @@
     <!-- col.// -->
                 <div class="col"> 
                     <div class="input-group input-spinner">
-                        <div class="input-group-prepend">
-                        <a href = "{% url 'RemovecartItem' cart_item.product.id %}" class="btn btn-light" type="button" id="button-plus"> <i class="fa fa-minus"></i> </a>
-                        </div>
-                        <input type="text" class="form-control"  value="{{ cart_item.quantity }}">
-                        <div class="input-group-append">
-                        <a href ="{% url 'addcart' cart_item.product.id %}" class="btn btn-light" type="button" id="button-minus"> <i class="fa fa-plus"></i> </a>
-                        </div>
+                        
+                        {{ cart_item.quantity }}
+                        
                     </div> <!-- input-group.// -->
                 </div> <!-- col.// -->
 </td>
