@@ -87,8 +87,6 @@ def signin(request):
                     for item in cart_item:
                                 item.user = user
                                 item.save()
-                else:
-                    print("cart does not exist")
                 auth.login(request,user)
                 return redirect("welcome")
         else:
