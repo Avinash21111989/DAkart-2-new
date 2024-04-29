@@ -3,7 +3,7 @@ from django.shortcuts import render
 from .forms import OrderForm
 from .models import Order
 from carts.models import CartItem
-
+ 
 # Create your views here.
 def place_order(request,total=0):
     form =  OrderForm(request.POST)
