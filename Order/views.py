@@ -132,5 +132,37 @@ def place_order(request,total=0, grand_total=0 ,tax =0):
         else:
                print("errors",form)
 
-def order_complete(request):
-      pass
+def order_complete(request,order_products=None, sub_total=0):
+      
+      order_number = request.GET.get('order_number')
+      transID = request.GET.get('payment_id')
+       
+      order = Order.objects.get(order_number = order_number, is_ordered=True)
+      print("order id", order.id)
+      try:
+        order_products =  OrderProduct.objects.all().filter(order_id = order.id) 
+      except:
+            pass
+      paymentobj = payment.objects.get(payment_id = transID)
+
+       
+      if order_products.count() > 1:  
+        for i in order_products:
+                
+                sub_total += i.product_price * i.quantity
+      else:
+           sub_total = order_products.product_price
+
+
+
+
+      context = {
+         'order':order,
+         'order_products' : order_products,
+         'payment': paymentobj,
+         'order_number':order_number,
+         'transID' : transID,
+         'sub_total' :sub_total 
+      }
+
+      return render(request,'order_complete.html',context)
