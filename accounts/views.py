@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.template.loader import render_to_string
 
+from Order.models import Order, OrderProduct
 from accounts.models import UserProfile
 from carts.models import Cart, CartItem
 from . forms import RegistrationForm,UserProfileForm, UserForm
@@ -123,8 +124,11 @@ def dashboard(request,userprofile=None):
         userprofile = UserProfile.objects.get(user_id = request.user.id)
     except:
         pass
+    orders = Order.objects.filter(user = request.user, is_ordered= True)
+    OrdersCount = orders.count()
     context = {
-        'userprofile':userprofile
+        'userprofile':userprofile,
+        'OrdersCount': OrdersCount
     }
     return render(request,'accounts/dashboard.html',context)
 
@@ -185,3 +189,30 @@ def change_password(request):
 
 
     return render(request,'accounts/change_password.html')
+
+def my_orders(request):
+    Orders = Order.objects.filter(user= request.user,is_ordered= True)
+    context = {
+       'Orders':Orders
+
+    }
+
+    return render (request,'accounts/my_orders.html',context)
+
+def order_detail(request,order_number):
+    order_detail = OrderProduct.objects.filter(order__order_number = order_number)
+
+    order = Order.objects.get(order_number = order_number)
+    subtotal = 0
+    for i in order_detail:
+        subtotal += i.product_price * i.quantity
+    
+    context = {
+        'order_detail':order_detail,
+        'subtotal':subtotal,
+        'order':order
+    }
+
+    return render(request,'accounts/order_detail.html',context)
+
+

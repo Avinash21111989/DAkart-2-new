@@ -10,6 +10,7 @@ from store.models import Product
 from django.conf import settings
 from django.http import JsonResponse
 from Order.models import payment,OrderProduct
+from django.db import connection
 
 def payments(request):
     body = json.loads(request.body)
@@ -67,8 +68,7 @@ def payments(request):
     to_email = [request.user.email,]
     send_mail(mail_subject,message,email_from,to_email)
     
-    print(order.order_number)
-    print(paymentobject.payment_id)
+    
         #redirect to order complete page
     data = {
             'order_number':order.order_number,
@@ -86,7 +86,7 @@ def place_order(request,total=0, grand_total=0 ,tax =0):
     for cart_item in cart_items:
             total += cart_item.product.price * cart_item.quantity
 
-    print(cart_items)    
+       
     if total !=0:      
         tax = (2*100)/total
         grand_total = total + tax
@@ -130,7 +130,7 @@ def place_order(request,total=0, grand_total=0 ,tax =0):
 
                     return render(request,'payments.html',context)
         else:
-               print("errors",form)
+               pass
 
 def order_complete(request,order_products=None, sub_total=0):
       
@@ -138,20 +138,25 @@ def order_complete(request,order_products=None, sub_total=0):
       transID = request.GET.get('payment_id')
        
       order = Order.objects.get(order_number = order_number, is_ordered=True)
-      print("order id", order.id)
+      
       try:
-        order_products =  OrderProduct.objects.all().filter(order_id = order.id) 
+        order_products =  OrderProduct.objects.filter(order_id = order.id) 
+       
       except:
             pass
       paymentobj = payment.objects.get(payment_id = transID)
-
-       
+    
+     
       if order_products.count() > 1:  
         for i in order_products:
                 
                 sub_total += i.product_price * i.quantity
       else:
-           sub_total = order_products.product_price
+           sub_total = order_products[0].product_price
+      
+      
+
+      
 
 
 
