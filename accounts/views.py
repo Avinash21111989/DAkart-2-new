@@ -26,35 +26,44 @@ def register(request):
             last_name = form.cleaned_data['last_name']
             email = form.cleaned_data['email']
             username = email.split("@")[0]
-            password = form.cleaned_data['password']       
-            user = User.objects.create_user (
-                username = username,
-                first_name =  first_name,
-                last_name  = last_name,
-                email  = email,
-                password = password,
-                is_active = False
-            )
-            user.save()
+            password = form.cleaned_data['password']
 
-            #create a user profile
-            profile = UserProfile()
-            profile.user_id = user.id
-            profile.profile_picture = 'default/default-user.png'
-            profile.save()
+            user_isactive = User.objects.filter(email=email)
+            if user_isactive.exists() == False:       
+                user = User.objects.create_user (
+                    username = username,
+                    first_name =  first_name,
+                    last_name  = last_name,
+                    email  = email,
+                    password = password,
+                    is_active = False
+                )
+                user.save()
+
+                #create a user profile
+                profile = UserProfile()
+                profile.user_id = user.id
+                profile.profile_picture = 'default/default-user.png'
+                profile.save()
             
-            current_site = get_current_site(request)
-            mail_subject = "DAKart - please activate your account"
-            email_from = settings.EMAIL_HOST_USER
-            message = render_to_string('accounts/account_verfication_email.html',{
-                'user':user,
-                'domain':current_site,
-                'uid':urlsafe_base64_encode(force_bytes(user.pk)),
-                'token':default_token_generator.make_token(user)
-            })
-            to_email = [email,]
-            send_mail(mail_subject,message,email_from,to_email)
-            return redirect('/accounts/signin?command=verification&email='+email)
+                current_site = get_current_site(request)
+                mail_subject = "DAKart - please activate your account"
+                email_from = settings.EMAIL_HOST_USER
+                message = render_to_string('accounts/account_verfication_email.html',{
+                    'user':user,
+                    'domain':current_site,
+                    'uid':urlsafe_base64_encode(force_bytes(user.pk)),
+                    'token':default_token_generator.make_token(user)
+                })
+                to_email = [email,]
+                send_mail(mail_subject,message,email_from,to_email)
+                return redirect('/accounts/signin?command=verification&email='+email)
+            else:
+                messages.warning(request,"Email id already exists. Please enter another email")
+                context = {
+               'form': form
+                }
+                return render(request,'accounts/register.html', context)
         else:
             context = {
                'form': form

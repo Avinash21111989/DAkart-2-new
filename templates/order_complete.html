@@ -64,7 +64,7 @@
                                         </thead>
                                         <tbody>
                                             
-                                          {% if order_products.count > 1 %}   
+                                            
                                             {% for item in order_products %}
                                                 <tr>
                                                     <td>{{item.product.product_name}}
@@ -75,15 +75,7 @@
                                                     
                                                 </tr>
                                             {% endfor %}
-                                            {% else %}
-                                            <tr>
-                                                <td>{{order_products.product.product_name}}
-                                                
-                                                </td>
-                                                <td class="text-center">{{order_products.quantity}}</td>
-                                                <td class="text-center">${{order_products.product_price}} USD</td>
-                                            </tr>
-                                            {% endif %}
+                                           
                                         </tbody>
                                         <tfoot>
                                             <tr>

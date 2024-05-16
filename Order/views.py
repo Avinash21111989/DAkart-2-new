@@ -138,7 +138,7 @@ def order_complete(request,order_products=None, sub_total=0):
       transID = request.GET.get('payment_id')
        
       order = Order.objects.get(order_number = order_number, is_ordered=True)
-      
+      print(order.id)
       try:
         order_products =  OrderProduct.objects.filter(order_id = order.id) 
        
@@ -146,7 +146,7 @@ def order_complete(request,order_products=None, sub_total=0):
             pass
       paymentobj = payment.objects.get(payment_id = transID)
     
-     
+    
       if order_products.count() > 1:  
         for i in order_products:
                 
