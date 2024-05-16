@@ -65,12 +65,12 @@ def search(request):
 
 def submit_review(request, product_id):
     url = request.META.get('HTTP_REFERER')
-    if request.POST['rating'] == "":
-        messages.error(request,"Rating is required")
+    if request.POST.get('rating') is None:
+        messages.warning(request,"Rating is required")
     else:
         if request.method == 'POST':
             try:
-                reviews = ReviewRating.objects.get(user__id = request.user.id,product__id = product_id)
+                reviews = ReviewRating.objects.get(user_id = request.user.id,product__id = product_id)
                 form = ReviewForm(request.POST,instance=reviews)
                 form.save()
                 messages.success(request,"Thank you! your review has been submitted")
