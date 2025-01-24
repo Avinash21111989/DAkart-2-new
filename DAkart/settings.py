@@ -30,7 +30,7 @@ ALLOWED_HOSTS = []
 
 
 # Application definition
-
+#this is a test comment to check git
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
